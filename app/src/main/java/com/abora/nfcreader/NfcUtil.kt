@@ -29,8 +29,8 @@ object NfcUtil {
             nfcAdapter.disableForegroundDispatch(activity)
     }
 
-    fun getDataFromTag(intent: Intent?): String {
-        var text = ""
+    fun getDataFromTag(intent: Intent?): MutableList<String>? {
+        val listNfcData : MutableList<String> = arrayListOf()
         val nfcData: Tag? = intent?.getParcelableExtra(NfcAdapter.EXTRA_TAG)
         val ndef = Ndef.get(nfcData)
         try {
@@ -40,19 +40,24 @@ object NfcUtil {
                 val ndefMessages = arrayOfNulls<NdefMessage>(messages.size)
                 for (i in messages.indices) {
                     ndefMessages[i] = messages[i] as NdefMessage
+                    ndefMessages[i]!!.records.forEach {
+                        listNfcData.add(
+                            if (String(it.payload).startsWith("\u0002en")){
+                                String(it.payload).drop(3)
+                            }else{
+                                String(it.payload)
+                            }
+                            )
+                    }
                 }
-                val record = ndefMessages[0]!!.records[0]
-                val payload = record.payload
-                text = String(payload)
-                Log.e("tag", text)
+                Log.e("tag", listNfcData.toString())
                 ndef.close()
 
             }
-            return text.toString()
+            return listNfcData
         } catch (e: Exception) {
             Log.e("tag", "Cannot Read From Tag.")
-            return "Cannot Read From Tag."
-//            Toast.makeText(applicationContext, "", Toast.LENGTH_LONG).show()
+            return null
         }
     }
 }

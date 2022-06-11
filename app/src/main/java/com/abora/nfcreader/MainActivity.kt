@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        Toast.makeText(applicationContext, NfcUtil.getDataFromTag(intent), Toast.LENGTH_LONG).show()
+        Toast.makeText(applicationContext, NfcUtil.getDataFromTag(intent).toString(), Toast.LENGTH_LONG).show()
         NfcUtil.getDataFromTag(intent)
     }
 
